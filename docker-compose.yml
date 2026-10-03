@@ -1,0 +1,78 @@
+services:
+  namenode:
+    image: bde2020/hadoop-namenode:2.0.0-hadoop3.2.1-java8
+    container_name: netflix-namenode
+    restart: always
+    ports:
+      - "9870:9870"
+      - "9000:9000"
+    volumes:
+      - namenode_data:/hadoop/dfs/name
+      - ./dataset:/dataset
+      - ./projeto:/projeto
+    environment:
+      - CLUSTER_NAME=netflix
+      - CORE_CONF_fs_defaultFS=hdfs://namenode:9000
+      - CORE_CONF_hadoop_http_staticuser_user=root
+      - HDFS_CONF_dfs_replication=1
+    networks:
+      - hadoop-net
+
+  datanode:
+    image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
+    container_name: netflix-datanode
+    restart: always
+    depends_on:
+      - namenode
+    volumes:
+      - datanode_data:/hadoop/dfs/data
+    environment:
+      - CORE_CONF_fs_defaultFS=hdfs://namenode:9000
+      - CORE_CONF_hadoop_http_staticuser_user=root
+      - HDFS_CONF_dfs_replication=1
+    networks:
+      - hadoop-net
+
+  resourcemanager:
+    image: bde2020/hadoop-resourcemanager:2.0.0-hadoop3.2.1-java8
+    container_name: netflix-resourcemanager
+    restart: always
+    depends_on:
+      - namenode
+      - datanode
+    ports:
+      - "8088:8088"
+    environment:
+      - CORE_CONF_fs_defaultFS=hdfs://namenode:9000
+      - CORE_CONF_hadoop_http_staticuser_user=root
+      - YARN_CONF_yarn_resourcemanager_hostname=resourcemanager
+      - YARN_CONF_yarn_resourcemanager_webapp_address=resourcemanager:8088
+      - YARN_CONF_yarn_nodemanager_resource_memory_mb=1536
+      - YARN_CONF_yarn_nodemanager_resource_cpu_vcores=1
+      - HDFS_CONF_dfs_replication=1
+    networks:
+      - hadoop-net
+
+  nodemanager:
+    image: bde2020/hadoop-nodemanager:2.0.0-hadoop3.2.1-java8
+    container_name: netflix-nodemanager
+    restart: always
+    depends_on:
+      - resourcemanager
+    environment:
+      - CORE_CONF_fs_defaultFS=hdfs://namenode:9000
+      - CORE_CONF_hadoop_http_staticuser_user=root
+      - YARN_CONF_yarn_resourcemanager_hostname=resourcemanager
+      - YARN_CONF_yarn_nodemanager_resource_memory_mb=1536
+      - YARN_CONF_yarn_nodemanager_resource_cpu_vcores=1
+      - HDFS_CONF_dfs_replication=1
+    networks:
+      - hadoop-net
+
+volumes:
+  namenode_data:
+  datanode_data:
+
+networks:
+  hadoop-net:
+    driver: bridge

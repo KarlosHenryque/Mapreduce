@@ -1,0 +1,4 @@
+br\edu\netflix\NetflixMapper.class
+br\edu\netflix\NetflixReducer.class
+br\edu\netflix\NetflixDriver.class
+br\edu\netflix\NetflixReducer$1.class
