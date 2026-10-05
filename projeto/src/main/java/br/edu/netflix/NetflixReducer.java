@@ -1,5 +1,6 @@
 package br.edu.netflix;
 
+import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
@@ -11,7 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class NetflixReducer extends Reducer<Text, Text, Text, Text> {
+public class NetflixReducer extends Reducer<Text, Text, NullWritable, Text> {
     private static final String DESCRIPTION_PREFIX = "DESCRIPTION|";
     private static final String WORD_PREFIX = "WORD|";
     private static final String TOTAL_KEY = "TOTAL";
@@ -53,11 +54,18 @@ public class NetflixReducer extends Reducer<Text, Text, Text, Text> {
 
     @Override
     protected void cleanup(Context context) throws IOException, InterruptedException {
+        emitLine(context, "", "--- RESULTADO ---");
+        emitLine(context, "", "");
+
         emitLine(context, "TITULO_MAIOR_DESCRICAO", "Título: " + highestTitle);
+        emitLine(context, "", "");
         emitLine(context, "TITULO_MAIOR_DESCRICAO", "Palavras: " + highestWords);
+        emitLine(context, "", "");
 
         emitLine(context, "TITULO_MENOR_DESCRICAO", "Título: " + lowestTitle);
+        emitLine(context, "", "");
         emitLine(context, "TITULO_MENOR_DESCRICAO", "Palavras: " + lowestWords);
+        emitLine(context, "", "");
 
         emitTopWords(context, "TOP_5_MAIS_FREQUENTES", getSortedWords(false));
         emitTopWords(context, "TOP_5_MENOS_FREQUENTES", getSortedWords(true));
@@ -66,7 +74,8 @@ public class NetflixReducer extends Reducer<Text, Text, Text, Text> {
     }
 
     private void emitLine(Context context, String key, String value) throws IOException, InterruptedException {
-        context.write(new Text(key), new Text(value));
+        String line = value.isEmpty() ? key : key.isEmpty() ? value : key + " " + value;
+        context.write(NullWritable.get(), new Text(line));
     }
 
     private void emitTopWords(Context context, String label, List<Map.Entry<String, Long>> entries)
@@ -77,8 +86,9 @@ public class NetflixReducer extends Reducer<Text, Text, Text, Text> {
         for (int i = 0; i < limit; i++) {
             Map.Entry<String, Long> entry = entries.get(i);
             String value = (i + 1) + ". " + entry.getKey() + " = " + entry.getValue();
-            emitLine(context, label, value);
+            emitLine(context, "", value);
         }
+        emitLine(context, "", "");
     }
 
     private List<Map.Entry<String, Long>> getSortedWords(boolean ascending) {

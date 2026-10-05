@@ -1,0 +1,61 @@
+# Maven
+target/
+**/target/
+
+# Java
+*.class
+*.jar
+*.war
+*.ear
+
+# Logs
+*.log
+logs/
+
+# IDE - IntelliJ
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# IDE - VS Code
+.vscode/
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Arquivos temporários
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# Maven Wrapper
+!mvnw
+!mvnw.cmd
+!.mvn/wrapper/maven-wrapper.jar
+
+# Hadoop
+hadoop/logs/
+hadoop/data/
+userlogs/
+
+# Resultados locais
+output/
+resultado.txt
+
+# Ambiente
+.env
+*.env
+!hadoop.env
+
+# Docker temporários
+docker-data/
