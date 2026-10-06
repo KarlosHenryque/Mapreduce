@@ -20,6 +20,7 @@ public class NetflixDriver {
         job.setJarByClass(NetflixDriver.class);
         job.setMapperClass(NetflixMapper.class);
         job.setReducerClass(NetflixReducer.class);
+        job.setInputFormatClass(CsvInputFormat.class);
 
         job.setMapOutputKeyClass(Text.class);
         job.setMapOutputValueClass(Text.class);
