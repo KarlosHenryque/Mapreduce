@@ -152,8 +152,8 @@ public class NetflixMapper extends Mapper<LongWritable, Text, Text, Text> {
                 .replace("\u2019", "'")
                 .replace("\u02BC", "'");
 
-        normalized = normalized.replace("'", "");
-        normalized = normalized.replaceAll("[^\\p{L}\\s]", " ");
+        normalized = normalized.replace("'", " ");
+        normalized = normalized.replaceAll("[^\\p{L}\\p{Nd}\\s]", " ");
         normalized = normalized.replaceAll("\\s+", " ").trim();
 
         return normalized;

@@ -92,7 +92,14 @@ public class NetflixReducer extends Reducer<Text, Text, NullWritable, Text> {
     }
 
     private List<Map.Entry<String, Long>> getSortedWords(boolean ascending) {
-        List<Map.Entry<String, Long>> entries = new ArrayList<>(wordFrequency.entrySet());
+        List<Map.Entry<String, Long>> entries = new ArrayList<>();
+
+        for (Map.Entry<String, Long> entry : wordFrequency.entrySet()) {
+            if (ascending && !entry.getKey().matches("\\p{L}+")) {
+                continue;
+            }
+            entries.add(entry);
+        }
 
         Collections.sort(entries, new Comparator<Map.Entry<String, Long>>() {
             @Override
